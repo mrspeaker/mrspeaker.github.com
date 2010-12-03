@@ -1,16 +1,66 @@
 <!DOCTYPE html>
 <head>
-	<title>Mr Speaker on GitHub</title>
-	<style type="text/css">
-		body{
-			background-color: #eed;
-			color: #333;
-			font-family: helvetica, verdana, sans-serif;
-		}
-	</style>
+    <title>Mr Speaker on GitHub</title>
+    <style type="text/css">
+        body{
+            background-color: #eed;
+            color: #333;
+            font-family: helvetica, verdana, sans-serif;
+            margin: 20px 30px;
+        }
+        h1{ margin: 0;}
+        a {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-	<h1>Mr Speaker</h1>
-	<a href="http://www.mrspeaker.net/">Mr Speaker's blog</a>
+    <h1>Mr Speaker</h1>
+    <a href="http://www.mrspeaker.net/">Oh! Mr Speaker!</a>
+    <pre id="deets">...loading...</pre>
+    <pre id="repos">...loading...</pre>
+    <script src="http://code.jquery.com/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function(){
+            gitprint.init();
+        });
+
+        var gitprint = {
+            user: "mrspeaker",
+            baseURL: "http://github.com/api/v2/json/",
+            userURL: "user/show/",
+            repoURL: "repos/show/",
+
+            init: function(){
+                // Print deets
+                this.grabData(this.userURL, function(data){
+                    $("#deets").text(gitprint.print(data.user));
+                });
+
+                // Print repos
+                this.grabData(this.repoURL, function(data){
+                    var txt = "";
+                    $(data.repositories).each(function(){
+                        txt += "\n" + gitprint.print(this);
+                    });
+                    $("#repos").text(txt);
+                })
+            },
+            grabData: function(url, callback){
+                $.getJSON( this.baseURL + url + this.user + "?callback=?", function(data){
+                    callback(data);
+                });
+            },
+            print: function(obj){
+                if(!obj || typeof obj !== "object") return "nothin.";
+                var res = "";
+                for( var prop in obj ){
+                    res += prop + ":" + obj[ prop ] + "\n";
+                }
+                return res;
+            }
+        }
+
+    </script>
 </body>
 </html>
