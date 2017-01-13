@@ -1,66 +1,109 @@
-<!DOCTYPE html>
+<html>
 <head>
-    <title>Mr Speaker on GitHub</title>
-    <style type="text/css">
-        body{
-            background-color: #eed;
-            color: #333;
-            font-family: helvetica, verdana, sans-serif;
-            margin: 20px 30px;
-        }
-        h1{ margin: 0;}
-        a {
-            color: #333;
-        }
-    </style>
+<title>Mr Speaker in github town</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+<style type="text/css">
+  body {
+    font-smooth: never;
+    -webkit-font-smoothing : none;
+    background-color:pink;
+    font-family: 'VT323', monospace;
+    color: #333;
+    width: 224px;
+    margin: 0 auto;
+    text-align: center;
+    padding-top: 55px;
+  }
+  .blink_me {
+    animation: blinker 300ms linear;
+  }
+  @keyframes blinker {
+    50% { opacity: 0; }
+  }
+
+  input[type=text] {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px dotted;
+  }
+ button {
+   border: 1px solid #333;
+   background-color: #FBF236;
+ }
+  #msg {
+    padding-bottom: 10px;
+  }
+  a {
+    color: #FBF236;
+  }
+  .twitz {
+    padding-top: 30px;
+  }
+</style>
 </head>
 <body>
-    <h1>Mr Speaker</h1>
-    <a href="http://www.mrspeaker.net/">Oh! Mr Speaker!</a>
-    <pre id="deets">...loading...</pre>
-    <pre id="repos">...loading...</pre>
-    <script src="http://code.jquery.com/jquery-1.4.4.min.js" type="text/javascript" charset="utf-8"></script>
-    <script type="text/javascript" charset="utf-8">
-        $(document).ready(function(){
-            gitprint.init();
-        });
+  <img src="./mrspeaker.png" />
+  <marquee><h1>welcome to Mr Speaker's hompage</h1></marquee>
 
-        var gitprint = {
-            user: "mrspeaker",
-            baseURL: "http://github.com/api/v2/json/",
-            userURL: "user/show/",
-            repoURL: "repos/show/",
+  <div id="msg"></div>
+    <input type="text" id="guess">
+    <button id="doGuess">guess</button>
+    <div class="twitz" >
+      <a href="https://www.twitter.com/mrspeaker">twittern</a>
+    </div>
+    <script>
+      (function () {
+        var guessEl = document.querySelector("#guess");
+        var msgEl = document.querySelector("#msg");
+        var doGuessEl = document.querySelector("#doGuess");
+        if (!guessEl) {
+          return;
+        }
+        var max = Number.MAX_SAFE_INTEGER;
+        var answer;
+        var guesses;
+        var gotit;
 
-            init: function(){
-                // Print deets
-                this.grabData(this.userURL, function(data){
-                    $("#deets").text(gitprint.print(data.user));
-                });
-
-                // Print repos
-                this.grabData(this.repoURL, function(data){
-                    var txt = "";
-                    $(data.repositories).each(function(){
-                        txt += "\n" + gitprint.print(this);
-                    });
-                    $("#repos").text(txt);
-                })
-            },
-            grabData: function(url, callback){
-                $.getJSON( this.baseURL + url + this.user + "?callback=?", function(data){
-                    callback(data);
-                });
-            },
-            print: function(obj){
-                if(!obj || typeof obj !== "object") return "nothin.";
-                var res = "";
-                for( var prop in obj ){
-                    res += prop + ":" + obj[ prop ] + "\n";
-                }
-                return res;
-            }
+        function init () {
+          answer = Math.floor(Math.random() * max);
+          guesses = 0;
+          gotit = false;
+          msgEl.innerHTML = "I'm thinking of a number<br/>between 0 and " + max;
         }
 
+        doGuessEl.addEventListener("click", guess, false);
+        init();
+
+        function guess () {
+          if (gotit) {
+            init();
+            return;
+          }
+          var guessed = parseInt(guessEl.value, 10);
+          if (isNaN(guessed)) {
+            msgEl.innerText = "I don't know that number";
+            return;
+          }
+          guesses++;
+          if (guessed > answer) {
+            msgEl.innerText = "Lower.";
+          }
+          else if (guessed < answer) {
+            msgEl.innerText = "Higher.";
+          }
+          else {
+            msgEl.innerText = "OMG, you guessed it! It took " + guesses + " tries!";
+            gotit = true;
+          }
+          msg.classList.remove("blink_me");
+          setTimeout(function () {
+            msg.classList.add("blink_me");
+          }, 20);
+        }
+
+      })();
     </script>
+
 </body>
 </html>
